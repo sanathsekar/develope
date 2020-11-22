@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="Publish-JMS-Topic" doc:id="22991453-0ba3-4fc4-8686-7f8533002f53" >
+		<http:listener doc:name="Listener" doc:id="b25fe9c7-2a6f-4755-8243-7f9ec986b36e" config-ref="HTTP_Listener_config" path="/publish-topic"/>
+		<jms:publish doc:name="Publish Message To Topics" doc:id="32dd8695-62d7-4a00-b977-1717852f9102" config-ref="JMS_Config" destination="message-topic-1" destinationType="TOPIC" persistentDelivery="true" timeToLive="1" timeToLiveUnit="MINUTES">
+			<jms:message outboundContentType="application/json" outboundEncoding="UTF-8" />
+		</jms:publish>
+	</flow>
+</mule>

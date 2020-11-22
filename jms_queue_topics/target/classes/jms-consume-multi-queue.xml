@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="Consume-Message-JMS-Queue" doc:id="d3572b63-93c1-44dd-8e59-44b449b4bd8b" >
+		<http:listener doc:name="Listener" doc:id="602436b2-af59-4331-b6a9-d042ccaf8c64" config-ref="HTTP_Listener_config" path="/consume-message-queue" allowedMethods="GET" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="9559af02-2dea-4df7-895d-edc96f2612ec" >
+			<route >
+				<jms:consume doc:name="Consume From Message Queue1 " doc:id="c7fbeb48-aa5f-45cc-bf6a-b3bb4c1d9c83" config-ref="JMS_Config" destination="message-queue-1" contentType="application/json" encoding="UTF-8" maximumWait="1" maximumWaitUnit="MINUTES" >
+					<jms:consumer-type >
+						<jms:queue-consumer />
+					</jms:consumer-type>
+				</jms:consume>
+			</route>
+			<route >
+				<jms:consume doc:name="Consume From Message Queue2" doc:id="b5ea01b1-a31d-4dcb-b750-3371dde790e5" config-ref="JMS_Config" destination="message-queue-2" contentType="application/json" encoding="UTF-8" maximumWait="1" maximumWaitUnit="MINUTES" >
+					<jms:consumer-type >
+						<jms:queue-consumer />
+					</jms:consumer-type>
+				</jms:consume>
+			</route>
+		</scatter-gather>
+		<validation:is-not-null doc:name="Validation On Incoming Payload" doc:id="9d8ae522-e4f2-4e2d-9a1b-4f798cbb44b0" value="#[payload]" message="Payload should not be empty" />
+		<ee:transform doc:name="Output Message" doc:id="4b757a0c-c83e-4d72-b710-4beed53fcaec" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

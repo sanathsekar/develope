@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="Publish-JMS-Queue" doc:id="0f28b7b9-505f-4c9d-bc17-8fdc16cfc3f1" >
+		<http:listener doc:name="Listener" doc:id="ab738dab-e5ed-4fa6-90e7-64b9abe14350" config-ref="HTTP_Listener_config" path="/publish-message-queue" allowedMethods="POST"/>
+		<ee:transform doc:name="savePayload" doc:id="1db5d496-d471-460c-b701-f376bde249e9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="6d08d7be-843f-4ec5-8115-da0c5b557bb9" >
+			<route >
+				<jms:publish doc:name="Publish Message To Queue1" doc:id="97d91c72-ac76-4cd1-b6c1-3bd9e3ae543d" config-ref="JMS_Config" destination="message-queue-1" persistentDelivery="true" timeToLive="1" timeToLiveUnit="MINUTES">
+					<jms:message outboundContentType="application/json" outboundEncoding="UTF-8" />
+				</jms:publish>
+			</route>
+			<route >
+				<jms:publish doc:name="Publish Message To Queue2" doc:id="1e1ba90e-5e3a-46ef-8e17-b6fde124bc46" config-ref="JMS_Config" destination="message-queue-2" persistentDelivery="true" timeToLive="1" timeToLiveUnit="MINUTES">
+					<jms:message outboundContentType="application/json" outboundEncoding="UTF-8" />
+				</jms:publish>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Output Message" doc:id="d91bd35c-501d-493b-8f81-a343bbade56c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

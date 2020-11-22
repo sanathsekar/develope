@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="Publish-Consume-JMS-Queue" doc:id="586ea9f3-7b2d-4717-8aa8-a699b8357a2d" >
+		<http:listener doc:name="Listener" doc:id="3a20f231-4506-4aae-ab10-1a8d94eedad9" config-ref="HTTP_Listener_config" path="/queue" allowedMethods="POST"/>
+		<jms:publish-consume doc:name="Publish The Message To One Queue &amp; Consume From Another Queue" doc:id="2dab062e-e445-4ccc-ada1-7b79c54737eb" config-ref="JMS_Config" destination="message-queue-4">
+			<jms:message outboundContentType="application/json" outboundEncoding="UTF-8" >
+				<jms:reply-to destination="newQueueConsume" />
+			</jms:message>
+			<jms:publish-configuration persistentDelivery="true" timeToLive="1" timeToLiveUnit="MINUTES" />
+			<jms:consume-configuration maximumWait="1" maximumWaitUnit="MINUTES" />
+		</jms:publish-consume>
+	</flow>
+	<flow name="Consume-JMS-Queue" doc:id="6b356c71-c8a4-4003-a090-12dcf560a4e5" >
+		<jms:listener doc:name="Initiate The Process On New Message" doc:id="daafe351-9734-438c-8165-708a10e24ff0" config-ref="JMS_Config" destination="message-queue-4" inboundContentType="application/json" inboundEncoding="UTF-8" numberOfConsumers="1">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+			<jms:response persistentDelivery="true" timeToLive="1" timeToLiveUnit="MINUTES" />
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="4bd8b7ba-402f-48f3-9b57-1bd13899acca" message="#[payload]"/>
+	</flow>
+</mule>

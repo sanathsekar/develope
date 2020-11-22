@@ -1,0 +1,38 @@
+{
+  "configs": [
+    "global.xml",
+    "jms-acknowledge-mode.xml",
+    "jms-publish-topic.xml",
+    "jms-publish-multi-queue.xml",
+    "jms-many-consume-topic.xml",
+    "jms-consume-multi-queue.xml",
+    "jms-consume-persist-queue.xml",
+    "jms-publish-consume-queue.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "com.mycompany:2app:1.0.0-SNAPSHOT",
+  "minMuleVersion": "4.3.0",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": [
+        "global.xml",
+        "jms-acknowledge-mode.xml",
+        "jms-consume-multi-queue.xml",
+        "jms-consume-persist-queue.xml",
+        "jms-many-consume-topic.xml",
+        "jms-publish-consume-queue.xml",
+        "jms-publish-multi-queue.xml",
+        "jms-publish-topic.xml",
+        "log4j2.xml"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

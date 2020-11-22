@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="JMS-Consume-Persistant-Queue" doc:id="0dd70771-b8ef-429d-939c-3a1fc1fa2542" >
+		<http:listener doc:name="Listener" doc:id="bd1ace9c-b5f1-4d77-b93e-342d9c43c3ec" config-ref="HTTP_Listener_config" path="/reprocess-consume-queue" allowedMethods="GET"/>
+		<jms:consume doc:name="Consume From Dead-Letter-Queue " doc:id="545d1293-3607-47af-bea4-2b7940bbe246" config-ref="JMS_Config" destination="ActiveMQ.DLQ" contentType="application/json" encoding="UTF-8" maximumWait="1" maximumWaitUnit="MINUTES">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:consume>
+		<ee:transform doc:name="Output Message" doc:id="546566a9-049d-477e-b08e-1ac321c0792d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

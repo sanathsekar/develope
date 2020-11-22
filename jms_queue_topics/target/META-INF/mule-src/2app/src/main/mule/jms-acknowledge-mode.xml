@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<flow name="Publish-JMS-With-Custom-Constant-CorrelationID" doc:id="6b7b3a3f-ef13-4b93-8a91-214b0ebe227a" >
+		<http:listener doc:name="Listener" doc:id="2f0a57a1-d0f8-4065-ad5c-6ecebb9019d7" config-ref="HTTP_Listener_config" path="/publish-for-ack-id" allowedMethods="POST"/>
+		<jms:publish doc:name="Publish Message With Customized CorrelationID" doc:id="a2198669-5468-4c98-b360-32ed6cd0461a" config-ref="JMS_Config" destination="message-queue-3" persistentDelivery="true" timeToLive="1" timeToLiveUnit="MINUTES">
+			<jms:message outboundContentType="application/json" outboundEncoding="UTF-8" correlationId="#[1234567890]"/>
+		</jms:publish>
+	</flow>
+	<flow name="Consume-JMS-And-Acknowldege-Mode" doc:id="bbf41df7-022f-4550-9a4b-967fdf60e517" >
+		<jms:listener doc:name="Initiate The Process On New Message" doc:id="f338e69c-8525-4bce-a28e-0ca5676a84d4" config-ref="JMS_Config" destination="message-queue-3" ackMode="MANUAL" inboundContentType="application/json" inboundEncoding="UTF-8" numberOfConsumers="1">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<jms:ack doc:name="Ack" doc:id="f94f9feb-a044-4a60-8a0c-67c06b815a62" ackId='#[attributes.ackId]' />
+		<logger level="INFO" doc:name="Customized CorrelationID and Acknowledgement ID" doc:id="c7baa244-d319-4d63-8f58-857c7e3e8133" message="CorrelationID: #[attributes.headers.correlationId] , MessageID: #[attributes.headers.messageId], AcknowledgeID: #[attributes.ackId]"/>
+	</flow>
+</mule>
